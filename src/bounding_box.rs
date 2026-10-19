@@ -2,7 +2,7 @@ use serde::Deserialize;
 use serde::Serialize;
 use std::fs;
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Canvas {
     pub strokes: Vec<Stroke>,
 }
@@ -34,9 +34,10 @@ impl Canvas {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Stroke {
-    pub points: Vec<(f64, f64)>,
+    pub color: Color,
+    pub points: Vec<Point>,
 }
 
 // A stroke is a vector of points, meaning a 'stroke' of line
@@ -51,23 +52,32 @@ impl Stroke {
     fn find_bounding_box(&self) -> Option<BoundingBox> {
         self.points
             .iter()
-            .map(|&(x, y)| BoundingBox::from_point(x, y))
+            .map(|p| BoundingBox::from_point(p.x, p.y))
             .reduce(|acc, e| acc.join(e))
     }
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+// Information every point in a stroke holds
+pub struct Point {
+    x: f32,
+    y: f32,
+    timestamp: u64,
+    pressure: f32,
 }
 
 // A bounding box
 #[derive(Debug)]
 pub struct BoundingBox {
-    pub min_x: f64,
-    pub min_y: f64,
-    pub max_x: f64,
-    pub max_y: f64,
+    pub min_x: f32,
+    pub min_y: f32,
+    pub max_x: f32,
+    pub max_y: f32,
 }
 
 impl BoundingBox {
     // Creates a bounding box using a single point, useful for the find bounding box function
-    pub fn from_point(x: f64, y: f64) -> Self {
+    pub fn from_point(x: f32, y: f32) -> Self {
         BoundingBox {
             min_x: x,
             min_y: y,
@@ -84,4 +94,11 @@ impl BoundingBox {
             max_y: self.max_y.max(other.max_y),
         }
     }
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct Color {
+    r: u8,
+    g: u8,
+    b: u8,
 }

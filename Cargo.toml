@@ -1,5 +1,5 @@
 [package]
-name = "week1-bounding_box"
+name = "ink-core"
 version = "0.1.0"
 edition = "2024"
 

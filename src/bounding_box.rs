@@ -55,6 +55,27 @@ impl Stroke {
             .map(|p| BoundingBox::from_point(p.x, p.y))
             .reduce(|acc, e| acc.join(e))
     }
+
+    // Add a point to this stroke
+    fn add_point(&mut self, point: Point) {
+        self.points.append(&mut vec![point]);
+    }
+
+    // Calculate the length of the stroke
+    fn total_length(&self) -> f32 {
+        self.points
+            .windows(2)
+            .map(|w| {
+                // Calculates the euclidian distance between 2 points
+                let p1 = &w[0];
+                let p2 = &w[1];
+                let diff_x = p1.x - p2.x;
+                let diff_y = p2.y - p2.y;
+                (diff_x.powi(2) + diff_y * diff_y).sqrt()
+            })
+            // Summing the distances to get total distance
+            .sum()
+    }
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -96,9 +117,10 @@ impl BoundingBox {
     }
 }
 
+// Color struct that stores red, gree, blue each from value 0.0-1.0
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Color {
-    r: u8,
-    g: u8,
-    b: u8,
+    r: f32,
+    g: f32,
+    b: f32,
 }

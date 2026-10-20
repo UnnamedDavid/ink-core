@@ -70,7 +70,7 @@ impl Stroke {
                 let p1 = &w[0];
                 let p2 = &w[1];
                 let diff_x = p1.x - p2.x;
-                let diff_y = p2.y - p2.y;
+                let diff_y = p1.y - p2.y;
                 (diff_x.powi(2) + diff_y * diff_y).sqrt()
             })
             // Summing the distances to get total distance

@@ -1,5 +1,4 @@
-mod bounding_box;
-use bounding_box::Canvas;
+use ink_core::canvas::Canvas;
 use std::env;
 use std::io::{self, Write};
 

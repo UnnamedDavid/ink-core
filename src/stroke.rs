@@ -30,7 +30,7 @@ impl Stroke {
     }
 
     // Calculate the length of the stroke
-    pub fn total_length(&self) -> f32 {
+    pub fn length(&self) -> f32 {
         self.points
             .windows(2)
             .map(|w| {

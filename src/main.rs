@@ -1,6 +1,6 @@
 use ink_core::Canvas;
 use std::env;
-use std::io::{self, Write};
+use std::io::{self};
 
 fn main() {
     // Reads a file path if the user provides one e.g. `cargo run -- custom.json`,
@@ -18,9 +18,35 @@ fn main() {
         "For each stroke on the canvas, the bounding box is {bbox_each:#?}, for the total canvas, the bounding box is {bbox_total:#?}"
     );
 
-    // Wait until user to press enter to exit program so user can see the output
-    println!("\nPress Enter to exit...");
-    let _ = io::stdout().flush();
-    let mut pause = String::new();
-    let _ = io::stdin().read_line(&mut pause);
+    // Provides user the length of stroke of their requested index on the Canvas
+    loop {
+        println!("Press ENTER to finish");
+        println!(
+            "Select which stroke on the canvas you want to see length [1-{}]: ",
+            this_canvas.strokes.len()
+        );
+        let mut response = String::new();
+        match io::stdin().read_line(&mut response) {
+            Ok(_) => (),
+            Err(e) => {
+                println!("failed to process your input: {e}");
+                continue;
+            }
+        }
+        // Exit program if the user presses ENTER
+        if response.trim().is_empty() {
+            break;
+        };
+
+        let index = match response.trim().parse::<usize>() {
+            // Handle when user did not enter an integer and out of range indexes
+            Ok(result) if (1..=this_canvas.strokes.len()).contains(&result) => result - 1,
+            _ => {
+                println!("please enter an integer [1-{}]", this_canvas.strokes.len());
+                continue;
+            }
+        };
+        let the_stroke = &this_canvas.strokes[index];
+        println!("{}", the_stroke.length())
+    }
 }

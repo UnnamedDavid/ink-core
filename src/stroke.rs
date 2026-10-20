@@ -1,6 +1,5 @@
-use crate::color::Color;
-use crate::geometry::BoundingBox;
 use crate::geometry::Point;
+use crate::{BoundingBox, Color};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]

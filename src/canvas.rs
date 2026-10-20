@@ -1,7 +1,5 @@
-use crate::geometry::BoundingBox;
-use crate::stroke::Stroke;
-use serde::Deserialize;
-use serde::Serialize;
+use crate::{BoundingBox, Stroke};
+use serde::{Deserialize, Serialize};
 use std::fs;
 
 #[derive(Debug, Deserialize, Serialize)]

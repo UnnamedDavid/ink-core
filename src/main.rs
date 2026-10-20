@@ -1,4 +1,4 @@
-use ink_core::canvas::Canvas;
+use ink_core::Canvas;
 use std::env;
 use std::io::{self, Write};
 

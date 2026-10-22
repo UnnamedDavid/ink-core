@@ -2,73 +2,78 @@
     "strokes": [
         {
             "color": {
-                "r": 1,
-                "g": 0,
-                "b": 0
+                "r": 1.0,
+                "g": 0.0,
+                "b": 0.0
             },
             "points": [
                 {
-                    "x": 10.0,
-                    "y": 15.0,
-                    "timestamp": 1700000000000,
-                    "pressure": 0.2
+                    "x": 0.0,
+                    "y": 0.0,
+                    "timestamp": 100,
+                    "pressure": 0.5
                 },
                 {
-                    "x": 14.5,
-                    "y": 21.0,
-                    "timestamp": 1700000000008,
-                    "pressure": 0.55
+                    "x": 3.0,
+                    "y": 4.0,
+                    "timestamp": 110,
+                    "pressure": 0.6
                 },
                 {
-                    "x": 22.0,
-                    "y": 30.5,
-                    "timestamp": 1700000000016,
-                    "pressure": 0.85
-                },
-                {
-                    "x": 35.0,
-                    "y": 42.0,
-                    "timestamp": 1700000000024,
-                    "pressure": 0.95
-                },
-                {
-                    "x": 50.0,
-                    "y": 48.0,
-                    "timestamp": 1700000000032,
-                    "pressure": 0.4
+                    "x": 6.0,
+                    "y": 8.0,
+                    "timestamp": 120,
+                    "pressure": 0.7
                 }
             ]
         },
         {
             "color": {
-                "r": 0,
-                "g": 1,
-                "b": 0
+                "r": 0.0,
+                "g": 1.0,
+                "b": 0.0
             },
             "points": [
                 {
-                    "x": 100.0,
-                    "y": 80.0,
-                    "timestamp": 1700000000100,
-                    "pressure": 0.3
+                    "x": -10.0,
+                    "y": 5.0,
+                    "timestamp": 200,
+                    "pressure": 0.8
                 },
                 {
-                    "x": 115.0,
-                    "y": 85.0,
-                    "timestamp": 1700000000108,
-                    "pressure": 0.7
+                    "x": 0.0,
+                    "y": 5.0,
+                    "timestamp": 210,
+                    "pressure": 0.8
                 },
                 {
-                    "x": 130.0,
-                    "y": 95.0,
-                    "timestamp": 1700000000116,
-                    "pressure": 0.65
-                },
+                    "x": 15.0,
+                    "y": 5.0,
+                    "timestamp": 220,
+                    "pressure": 0.8
+                }
+            ]
+        },
+        {
+            "color": {
+                "r": 0.0,
+                "g": 0.0,
+                "b": 1.0
+            },
+            "points": []
+        },
+        {
+            "color": {
+                "r": 1.0,
+                "g": 1.0,
+                "b": 0.0
+            },
+            "points": [
                 {
-                    "x": 140.0,
-                    "y": 110.0,
-                    "timestamp": 1700000000124,
-                    "pressure": 0.15
+                    "x": -5.0,
+                    "y": -5.0,
+                    "timestamp": 300,
+                    "pressure": 0.9
                 }
             ]
         }

@@ -7,3 +7,9 @@ pub struct Color {
     g: f32,
     b: f32,
 }
+impl Color {
+    // Contructor
+    pub fn new(r: f32, g: f32, b: f32) -> Self {
+        Self { r: r, g: g, b: b }
+    }
+}

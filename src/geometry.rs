@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 // Information every point in a stroke holds
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, PartialEq)]
 pub struct Point {
     pub x: f32,
     pub y: f32,
@@ -20,7 +20,7 @@ impl Point {
     }
 }
 // A bounding box
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct BoundingBox {
     pub min_x: f32,
     pub min_y: f32,

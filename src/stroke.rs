@@ -2,7 +2,7 @@ use crate::geometry::Point;
 use crate::{BoundingBox, Color};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, PartialEq)]
 pub struct Stroke {
     pub color: Color,
     pub points: Vec<Point>,

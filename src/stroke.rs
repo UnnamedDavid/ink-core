@@ -1,4 +1,4 @@
-use crate::geometry::Point;
+use crate::Point;
 use crate::{BoundingBox, Color};
 use serde::{Deserialize, Serialize};
 
@@ -46,5 +46,37 @@ impl Stroke {
             })
             // Summing the distances to get total distance
             .sum()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // Using negative and positive numbers that is not the origin to ensure bbox isn't anchored at origin.
+    const TEST_X: f32 = -52.0;
+    const TEST_Y: f32 = 71.0;
+
+    fn dummy_color() -> Color {
+        Color::new(0.0, 0.0, 0.0)
+    }
+    #[test]
+    fn test_empty_stroke() {
+        let stroke = Stroke::new(dummy_color());
+        assert_eq!(stroke.find_bounding_box(), None);
+        assert_eq!(stroke.length(), 0.0);
+    }
+
+    #[test]
+    fn test_single_point_stroke() {
+        let mut stroke = Stroke::new(dummy_color());
+        stroke.add_point(Point::new(TEST_X, TEST_Y, 0, 0.0));
+        assert_eq!(stroke.length(), 0.0);
+
+        let bbox = stroke.find_bounding_box().unwrap();
+        assert_eq!(bbox.min_x, -52.0);
+        assert_eq!(bbox.max_x, -52.0);
+        assert_eq!(bbox.min_y, 71.0);
+        assert_eq!(bbox.max_y, 71.0);
     }
 }

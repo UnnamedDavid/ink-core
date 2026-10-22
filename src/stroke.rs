@@ -11,9 +11,12 @@ pub struct Stroke {
 // A stroke is a vector of points, meaning a 'stroke' of line
 impl Stroke {
     // Contructor
-    // pub fn new(points: Vec<(f64, f64)>) -> Self {
-    //     Self { points }
-    // }
+    pub fn new(color: Color) -> Self {
+        Self {
+            color,
+            points: Vec::new(),
+        }
+    }
 
     // Finds the bounding box of the stroke of line, that is, the smallest box
     // that encloses the stroke.

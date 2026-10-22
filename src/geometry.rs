@@ -8,6 +8,17 @@ pub struct Point {
     pub pressure: f32,
 }
 
+impl Point {
+    // Constructor
+    pub fn new(x: f32, y: f32, timestamp: u64, pressure: f32) -> Self {
+        Self {
+            x,
+            y,
+            timestamp,
+            pressure,
+        }
+    }
+}
 // A bounding box
 #[derive(Debug)]
 pub struct BoundingBox {

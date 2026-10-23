@@ -27,7 +27,7 @@ impl fmt::Display for InkError {
     }
 }
 
-// Allow automatic third party error directing to InkError
+// Failure analysis
 impl error::Error for InkError {
     fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match self {

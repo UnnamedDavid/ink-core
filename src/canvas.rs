@@ -16,6 +16,13 @@ impl Canvas {
         Result::Ok(result)
     }
 
+    // Writing Canvas data back to a Json file
+    pub fn to_json_file(&self, path: &str) -> Result<(), InkError> {
+        let result = serde_json::to_string(self)?;
+        fs::write(path, result)?;
+        Ok(())
+    }
+
     // Find the bounding box that encloses all the strokes on the canvas
     pub fn overall_bounding_box(&self) -> Option<BoundingBox> {
         // If all the strokes are empty, None will be returned

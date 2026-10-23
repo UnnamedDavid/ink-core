@@ -9,7 +9,13 @@ fn main() {
         .nth(1)
         .unwrap_or_else(|| String::from("canvas.json"));
 
-    let this_canvas = Canvas::from_json_file(&path);
+    let this_canvas = match Canvas::from_json_file(&path) {
+        Ok(c) => c,
+        Err(err) => {
+            eprintln!("Failed to load {path}: {err}");
+            return;
+        }
+    };
 
     let bbox_each = this_canvas.each_bounding_box();
     let bbox_total = this_canvas.overall_bounding_box();

@@ -1,4 +1,4 @@
-use crate::{BoundingBox, Stroke};
+use crate::{BoundingBox, InkError, Stroke};
 use serde::{Deserialize, Serialize};
 use std::fs;
 
@@ -10,9 +10,10 @@ pub struct Canvas {
 // A canvas holds many strokes
 impl Canvas {
     // From Json
-    pub fn from_json_file(path: &str) -> Self {
-        let content = fs::read_to_string(path).expect("Could not read json file");
-        serde_json::from_str(&content).expect("Json file is not well-formatted")
+    pub fn from_json_file(path: &str) -> Result<Self, InkError> {
+        let content = fs::read_to_string(path)?;
+        let result = serde_json::from_str(&content)?;
+        Result::Ok(result)
     }
 
     // Find the bounding box that encloses all the strokes on the canvas

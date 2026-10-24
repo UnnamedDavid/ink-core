@@ -23,6 +23,14 @@ impl Canvas {
         Ok(())
     }
 
+    // Remove a stroke from the canvas from index
+    pub fn remove_stroke(&mut self, index: usize) -> Result<Stroke, InkError> {
+        if index >= self.strokes.len() {
+            return Err(InkError::StrokeNotFound(index));
+        }
+        Ok(self.strokes.remove(index))
+    }
+
     // Find the bounding box that encloses all the strokes on the canvas
     pub fn overall_bounding_box(&self) -> Option<BoundingBox> {
         // If all the strokes are empty, None will be returned

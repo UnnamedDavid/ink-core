@@ -31,6 +31,11 @@ impl Canvas {
         Ok(self.strokes.remove(index))
     }
 
+    // Remove everything on the canvas
+    pub fn clear(&mut self) {
+        self.strokes.clear();
+    }
+
     // Find the bounding box that encloses all the strokes on the canvas
     pub fn overall_bounding_box(&self) -> Option<BoundingBox> {
         // If all the strokes are empty, None will be returned
@@ -47,5 +52,15 @@ impl Canvas {
             .iter()
             .map(|stroke| stroke.find_bounding_box())
             .collect()
+    }
+
+    // Shift every point on the canvas
+    pub fn translate(&mut self, dx: f32, dy: f32) {
+        for stroke in &mut self.strokes {
+            for point in &mut stroke.points {
+                point.x += dx;
+                point.y += dy
+            }
+        }
     }
 }

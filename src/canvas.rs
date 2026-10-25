@@ -1,4 +1,4 @@
-use crate::{BoundingBox, InkError, Stroke};
+use crate::{BoundingBox, InkError, Point, Stroke};
 use serde::{Deserialize, Serialize};
 use std::fs;
 
@@ -62,5 +62,12 @@ impl Canvas {
                 point.y += dy
             }
         }
+    }
+
+    // Check if a points hits a stroke or not
+    pub fn hit_test(&self, point: Point, tolerance: f32) -> bool {
+        self.strokes
+            .iter()
+            .any(|stroke| stroke.hit_test(&point, tolerance))
     }
 }

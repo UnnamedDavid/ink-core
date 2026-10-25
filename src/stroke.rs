@@ -47,6 +47,33 @@ impl Stroke {
             // Summing the distances to get total distance
             .sum()
     }
+
+    // Determine if a point hits the stroke
+    pub fn hit_test(&self, point: &Point, tolerance: f32) -> bool {
+        let Some(stroke_bbox) = self.find_bounding_box() else {
+            return false;
+        };
+        let query_bbox = BoundingBox {
+            min_x: point.x - tolerance,
+            max_x: point.x + tolerance,
+            min_y: point.y - tolerance,
+            max_y: point.y + tolerance,
+        };
+
+        if !query_bbox.intersects(&stroke_bbox) {
+            return false;
+        }
+
+        let tolerance_sq = tolerance * tolerance;
+
+        match self.points.as_slice() {
+            [] => false,
+            [single] => point.distance_squared(single) <= tolerance_sq,
+            points => points
+                .windows(2)
+                .any(|seg| point.distance_squared_to_segment(&seg[0], &seg[1]) <= tolerance_sq),
+        }
+    }
 }
 
 #[cfg(test)]

@@ -1,6 +1,7 @@
 use crate::Point;
 use crate::{BoundingBox, Color};
 use serde::{Deserialize, Serialize};
+use svg::node::element::Polyline;
 
 #[derive(Debug, Deserialize, Serialize, PartialEq)]
 pub struct Stroke {
@@ -24,7 +25,7 @@ impl Stroke {
         self.points
             .iter()
             .map(|p| BoundingBox::from_point(p.x, p.y))
-            .reduce(|acc, e| acc.join(e))
+            .reduce(|acc, e| acc.join(&e))
     }
 
     // Add a point to this stroke
@@ -73,6 +74,23 @@ impl Stroke {
                 .windows(2)
                 .any(|seg| point.distance_squared_to_segment(&seg[0], &seg[1]) <= tolerance_sq),
         }
+    }
+
+    pub fn to_svg_polyline(&self, width: f32) -> Polyline {
+        let points_str = self
+            .points
+            .iter()
+            .map(|p| format!("{:.2}, {:.2}", p.x, p.y))
+            .collect::<Vec<_>>()
+            .join(" ");
+
+        Polyline::new()
+            .set("fill", "none")
+            .set("stroke", self.color.to_svg_rgb())
+            .set("stroke-width", width)
+            .set("stroke-linecap", "round")
+            .set("stroke-linejoin", "round")
+            .set("points", points_str)
     }
 }
 

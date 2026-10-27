@@ -42,6 +42,8 @@ impl Point {
         let ap_y = a.y - self.y;
 
         // Concepts: Parametric lines & dot product
+        // ap_x * ab_x + ap_y * ab_y = cos θ * |ap| * |ab|
+        // cos θ * |ap| = leg of the right triangle with hypotenuse |ap| = our desired distance
         // Droping a perpendicular line from self to line AB intersecting at point P
         // and find the fraction t of the way P is from point A to point B
         let t = ((ap_x * ab_x + ap_y * ab_y) / dist_ab_sq).clamp(0.0, 1.0);
@@ -76,7 +78,7 @@ impl BoundingBox {
         }
     }
     // Find the bounding box of two bounding boxes
-    pub fn join(&self, other: BoundingBox) -> BoundingBox {
+    pub fn join(&self, other: &BoundingBox) -> BoundingBox {
         BoundingBox {
             min_x: self.min_x.min(other.min_x),
             min_y: self.min_y.min(other.min_y),

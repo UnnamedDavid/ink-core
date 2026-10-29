@@ -1,4 +1,4 @@
-use ink_core::{Canvas, Point};
+use ink_core::{Canvas, Point, parse_arg};
 use std::env;
 use std::io::{self, Write};
 
@@ -21,24 +21,6 @@ fn print_help() {
     println!("  help                              - show this message");
     println!("  quit                              - exit the program");
 }
-
-// Parses parts[index] into T, printing a message on failure
-fn parse_arg<T: std::str::FromStr>(parts: &[&str], index: usize, name: &str) -> Option<T> {
-    match parts.get(index) {
-        None => {
-            println!("Missing argument: <{name}>");
-            None
-        }
-        Some(raw) => match raw.parse::<T>() {
-            Ok(v) => Some(v),
-            Err(_) => {
-                println!("Invalid value for <{name}>: '{raw}'");
-                None
-            }
-        },
-    }
-}
-
 fn main() {
     // Reads a file path if the user provides one e.g. `cargo run -- custom.json`,
     // otherwise defaults to "canvas.json" in the root directory.

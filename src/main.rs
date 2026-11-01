@@ -2,8 +2,6 @@ use ink_core::{Canvas, Point, parse_arg, parse_command};
 use std::env;
 use std::io::{self, Write};
 
-// Default hit-test tolerance (in canvas units) when the user doesn't provide one
-const DEFAULT_TOLERANCE: f32 = 5.0;
 // Default pressure for points added from the CLI
 const DEFAULT_PRESSURE: f32 = 0.5;
 
@@ -48,13 +46,14 @@ fn main() {
             Ok(0) => break,
             Ok(_) => (),
             Err(e) => {
-                println!("Failed to process your input: {e}");
+                eprintln!("Failed to process your input: {e}");
                 continue;
             }
         }
         let parts: Vec<&str> = response.split_whitespace().collect();
-        // separate options and commands
-        let (positionals, options) = match parse_command(&parts) {
+        // Separate options and commands
+        // Options NOT used yet
+        let (positionals, _options) = match parse_command(&parts) {
             Ok((p, o)) => (p, o),
             Err(e) => {
                 eprintln!("Failed to parse you command: {e}");
@@ -88,17 +87,21 @@ fn main() {
                             b.max_x - b.min_x,
                             b.max_y - b.min_y
                         ),
-                        None => println!("Bounding box: none (canvas has no points)"),
+                        None => eprintln!("Bounding box: none (canvas has no points)"),
                     }
                 }
                 Some("translate") => {
                     // receives x and y
                     // translate using translate function
-                    let (Some(dx), Some(dy)) = (
-                        parse_arg::<f32>(&positionals, 2, "dx"),
-                        parse_arg::<f32>(&positionals, 3, "dy"),
-                    ) else {
-                        continue;
+                    let (dx, dy) = match (
+                        parse_arg::<f32>(positionals.get(2), "dx"),
+                        parse_arg::<f32>(positionals.get(3), "dy"),
+                    ) {
+                        (Ok(dx), Ok(dy)) => (dx, dy),
+                        (Err(e), _) | (_, Err(e)) => {
+                            eprintln!("{e}");
+                            continue;
+                        }
                     };
                     this_canvas.translate(dx, dy);
                     println!("Canvas translated by ({dx}, {dy})");
@@ -122,7 +125,7 @@ fn main() {
                     }
                 }
                 Some("bbox") => {
-                    let Some(i) = parse_arg::<usize>(&positionals, 2, "index") else {
+                    let Ok(i) = parse_arg::<usize>(positionals.get(2), "index") else {
                         continue;
                     };
                     // prints bounding box of this stroke
@@ -139,10 +142,10 @@ fn main() {
                 }
                 Some("add-point") => {
                     // adds a point to a stroke index. eg usr input 1 30 21 (stroke index 1, (point 30,21))
-                    let (Some(i), Some(x), Some(y)) = (
-                        parse_arg::<usize>(&positionals, 2, "index"),
-                        parse_arg::<f32>(&positionals, 3, "x"),
-                        parse_arg::<f32>(&positionals, 4, "y"),
+                    let (Ok(i), Ok(x), Ok(y)) = (
+                        parse_arg::<usize>(positionals.get(2), "index"),
+                        parse_arg::<f32>(positionals.get(3), "x"),
+                        parse_arg::<f32>(positionals.get(4), "y"),
                     ) else {
                         continue;
                     };
@@ -160,20 +163,21 @@ fn main() {
             },
             "hit" => {
                 // check if a user input point is in contact with a stroke via Canvas::hit_test
-                let (Some(x), Some(y)) = (
-                    parse_arg::<f32>(&positionals, 1, "x"),
-                    parse_arg::<f32>(&positionals, 2, "y"),
+                let (Ok(x), Ok(y)) = (
+                    parse_arg::<f32>(positionals.get(1), "x"),
+                    parse_arg::<f32>(positionals.get(2), "y"),
                 ) else {
                     continue;
                 };
-                let tolerance = if positionals.len() > 3 {
-                    match parse_arg::<f32>(&positionals, 3, "tolerance") {
-                        Some(t) => t,
-                        None => continue,
+
+                let tolerance = match parse_arg::<f32>(positionals.get(3), "tolerance") {
+                    Ok(t) => t,
+                    Err(e) => {
+                        println!("{e}");
+                        continue;
                     }
-                } else {
-                    DEFAULT_TOLERANCE
                 };
+
                 if this_canvas.hit_test(Point::new(x, y, 0, 0.0), tolerance) {
                     println!("Hit! ({x}, {y}) touches a stroke (tolerance {tolerance})");
                 } else {

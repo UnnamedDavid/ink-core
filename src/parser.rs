@@ -1,28 +1,20 @@
-// Parses parts[index] into T, printing a message on failure
+use crate::ParseArgError;
+
 pub fn parse_arg<T: std::str::FromStr>(
-    positionals: &[&str],
-    index: usize,
-    name: &str,
-) -> Option<T> {
-    match positionals.get(index) {
-        None => {
-            println!("Missing argument: <{name}>");
-            None
-        }
-        Some(raw) => match raw.parse::<T>() {
-            Ok(v) => Some(v),
-            Err(_) => {
-                println!("Invalid value for <{name}>: '{raw}'");
-                None
-            }
-        },
-    }
+    raw: Option<&&str>,
+    name: &'static str,
+) -> Result<T, ParseArgError> {
+    let &arg = raw.ok_or(ParseArgError::MissingArgument(name))?;
+    arg.parse::<T>().map_err(|_| ParseArgError::InvalidValue {
+        name,
+        found: arg.to_string(),
+    })
 }
 
 // Parse command prompt from user and separate positionals and options
 pub fn parse_command<'a>(
-    parts: &'a [&'a str],
-) -> Result<(Vec<&'a str>, Vec<PaintOptions>), String> {
+    parts: &[&'a str],
+) -> Result<(Vec<&'a str>, Vec<PaintOptions>), ParseArgError> {
     let mut positionals: Vec<&str> = Vec::new();
     let mut options: Vec<PaintOptions> = Vec::new();
 
@@ -35,26 +27,12 @@ pub fn parse_command<'a>(
                 options.push(PaintOptions::Continued);
             }
             "-r" | "--radius" => {
-                let value = iter
-                    // Advance iterator so value for options does not get misinterpretated as a positional
-                    .next()
-                    .ok_or_else(|| String::from("Expected a float value for radius"))?;
-
-                let radius = value
-                    .parse::<f32>()
-                    .map_err(|_| String::from("Expected a float value for radius"))?;
-
+                // Advance iterator so value for options does not get misinterpretated as a positional
+                let radius = parse_arg(iter.next(), "radius")?;
                 options.push(PaintOptions::Radius(radius));
             }
             "-o" | "--opacity" => {
-                let value = iter
-                    .next()
-                    .ok_or_else(|| String::from("Expected a float value for opactiy"))?;
-
-                let opacity = value
-                    .parse::<f32>()
-                    .map_err(|_| String::from("Expected a float value for opactiy"))?;
-
+                let opacity = parse_arg(iter.next(), "opacity")?;
                 options.push(PaintOptions::Opacity(opacity));
             }
             // Parse positionals

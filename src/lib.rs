@@ -9,6 +9,7 @@ pub mod stroke;
 pub use canvas::Canvas;
 pub use color::Color;
 pub use error::InkError;
+pub use error::ParseArgError;
 pub use geometry::BoundingBox;
 pub use geometry::Point;
 pub use parser::parse_arg;

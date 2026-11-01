@@ -49,3 +49,22 @@ impl From<serde_json::Error> for InkError {
         InkError::Serialization(err)
     }
 }
+
+#[derive(Debug)]
+pub enum ParseArgError {
+    MissingArgument(&'static str),
+    InvalidValue { name: &'static str, found: String },
+}
+
+impl fmt::Display for ParseArgError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            ParseArgError::MissingArgument(name) => write!(f, "Missing argument for {name}"),
+            ParseArgError::InvalidValue { name, found } => {
+                write!(f, "missing argument for {name}: {found}")
+            }
+        }
+    }
+}
+
+impl error::Error for ParseArgError {}

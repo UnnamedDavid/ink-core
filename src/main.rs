@@ -1,4 +1,4 @@
-use ink_core::{Canvas, Point, parse_arg};
+use ink_core::{Canvas, Point, parse_arg, parse_command};
 use std::env;
 use std::io::{self, Write};
 
@@ -53,16 +53,28 @@ fn main() {
             }
         }
         let parts: Vec<&str> = response.split_whitespace().collect();
+        // separate options and commands
+        let (positionals, options) = match parse_command(&parts) {
+            Ok((p, o)) => (p, o),
+            Err(e) => {
+                eprintln!("Failed to parse you command: {e}");
+                continue;
+            }
+        };
 
         // Ignore empty lines instead of panicking on parts[0]
-        let Some(&command) = parts.first() else {
+        let Some(&command) = positionals.first() else {
             continue;
         };
 
         match command {
             "help" => print_help(),
             "quit" | "exit" => break,
-            "canvas" => match parts.get(1).copied() {
+            "paint" => {
+                // TODO
+                // start paint mode (paint.rs)
+            }
+            "canvas" => match positionals.get(1).copied() {
                 Some("info") => {
                     // prints amount of strokes on the canvas and the dimentions of the canvas (overall bounding box)
                     println!("Strokes: {}", this_canvas.strokes.len());
@@ -83,8 +95,8 @@ fn main() {
                     // receives x and y
                     // translate using translate function
                     let (Some(dx), Some(dy)) = (
-                        parse_arg::<f32>(&parts, 2, "dx"),
-                        parse_arg::<f32>(&parts, 3, "dy"),
+                        parse_arg::<f32>(&positionals, 2, "dx"),
+                        parse_arg::<f32>(&positionals, 3, "dy"),
                     ) else {
                         continue;
                     };
@@ -93,7 +105,7 @@ fn main() {
                 }
                 _ => println!("unrecognized command"),
             },
-            "stroke" => match parts.get(1).copied() {
+            "stroke" => match positionals.get(1).copied() {
                 Some("list") => {
                     // list every stroke with index and its length and its color
                     if this_canvas.strokes.is_empty() {
@@ -110,7 +122,7 @@ fn main() {
                     }
                 }
                 Some("bbox") => {
-                    let Some(i) = parse_arg::<usize>(&parts, 2, "index") else {
+                    let Some(i) = parse_arg::<usize>(&positionals, 2, "index") else {
                         continue;
                     };
                     // prints bounding box of this stroke
@@ -128,9 +140,9 @@ fn main() {
                 Some("add-point") => {
                     // adds a point to a stroke index. eg usr input 1 30 21 (stroke index 1, (point 30,21))
                     let (Some(i), Some(x), Some(y)) = (
-                        parse_arg::<usize>(&parts, 2, "index"),
-                        parse_arg::<f32>(&parts, 3, "x"),
-                        parse_arg::<f32>(&parts, 4, "y"),
+                        parse_arg::<usize>(&positionals, 2, "index"),
+                        parse_arg::<f32>(&positionals, 3, "x"),
+                        parse_arg::<f32>(&positionals, 4, "y"),
                     ) else {
                         continue;
                     };
@@ -149,13 +161,13 @@ fn main() {
             "hit" => {
                 // check if a user input point is in contact with a stroke via Canvas::hit_test
                 let (Some(x), Some(y)) = (
-                    parse_arg::<f32>(&parts, 1, "x"),
-                    parse_arg::<f32>(&parts, 2, "y"),
+                    parse_arg::<f32>(&positionals, 1, "x"),
+                    parse_arg::<f32>(&positionals, 2, "y"),
                 ) else {
                     continue;
                 };
-                let tolerance = if parts.len() > 3 {
-                    match parse_arg::<f32>(&parts, 3, "tolerance") {
+                let tolerance = if positionals.len() > 3 {
+                    match parse_arg::<f32>(&positionals, 3, "tolerance") {
                         Some(t) => t,
                         None => continue,
                     }
@@ -170,7 +182,7 @@ fn main() {
             }
             "save" => {
                 // eg input, mycanvas.json or drawing.svg
-                let Some(&file) = parts.get(1) else {
+                let Some(&file) = positionals.get(1) else {
                     println!("Missing argument: <file.json | file.svg>");
                     continue;
                 };

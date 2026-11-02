@@ -68,7 +68,7 @@ fn main() {
 
         match command {
             "help" => print_help(),
-            "quit" | "exit" => break,
+            "quit" => break,
             "paint" => {
                 // TODO
                 // start paint mode (paint.rs)

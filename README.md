@@ -10,12 +10,20 @@ A small Rust library + CLI for working with digital ink. A **canvas** holds many
 When you run the program, it:
 
 1. Loads `canvas.json` from the current directory (or a file path you pass as an argument).
-2. Prints the bounding box of **each stroke** and the bounding box of the **whole canvas**.
-3. Enters an interactive loop that asks which stroke you want to measure (`[1-N]`) and prints its total length.
-   * Invalid input or out-of-range numbers are rejected with a hint.
-   * Press **ENTER** on an empty line to exit.
+2. Starts the interactive CLI, type ``help`` to see available commands
 
-If the file is missing or the JSON is malformed, the program prints a readable error (e.g. `I/O error: ...` or `JSON formatting error: ...`) instead of crashing.
+```
+Available commands:
+  canvas info                       - number of strokes and overall bounding box
+  canvas translate <dx> <dy>        - shift every point on the canvas
+  stroke list                       - list every stroke with index, length and color
+  stroke bbox <index>               - bounding box of a stroke
+  stroke add-point <index> <x> <y>  - append a point to a stroke
+  hit <x> <y> [tolerance]           - check if a point touches any stroke
+  save <file.json | file.svg>       - save the canvas as JSON or SVG
+  help                              - show this message
+  quit                              - exit the program
+```
 
 ## Build & Usage
 
@@ -49,6 +57,7 @@ The executable will be generated in `target/release/`.
 ```bash
 cargo test
 ```
+Note: Currently a few functions does not implement test yet, I am working on it to include them.
 
 ## Canvas file format
 
@@ -87,39 +96,5 @@ All fields are required. A stroke may have an empty `points` array; its bounding
 | `src/stroke.rs` | `Stroke`: bounding box, length, hit-testing (+ unit tests) |
 | `src/geometry.rs` | `Point` and `BoundingBox` math |
 | `src/color.rs` | `Color` (RGB) |
-| `src/error.rs` | `InkError` enum for I/O, JSON, and index errors |
-
-## Library API
-
-Everything below is public and can be used from Rust via `use ink_core::{Canvas, Stroke, Point, ...};`. Items marked **✅ CLI** are used by the command-line program. Items marked **🚧 Library only** were added to the library but are **not yet available from the CLI**.
-
-### `Canvas`
-| Method | Description | Status |
-|--------|-------------|--------|
-| `from_json_file(path)` | Load a canvas from a JSON file | ✅ CLI |
-| `each_bounding_box()` | Bounding box of every stroke | ✅ CLI |
-| `overall_bounding_box()` | Bounding box enclosing all strokes | ✅ CLI |
-| `to_json_file(path)` | Save the canvas back to a JSON file | 🚧 Library only |
-| `remove_stroke(index)` | Remove a stroke by index; returns `InkError::StrokeNotFound` if out of range | 🚧 Library only |
-| `clear()` | Remove every stroke from the canvas | 🚧 Library only |
-| `translate(dx, dy)` | Shift every point on the canvas by an offset | 🚧 Library only |
-| `hit_test(point, tolerance)` | Check whether a point touches any stroke | 🚧 Library only |
-
-### `Stroke`
-| Method | Description | Status |
-|--------|-------------|--------|
-| `length()` | Total length of the stroke (sum of segment lengths) | ✅ CLI |
-| `find_bounding_box()` | Smallest box enclosing the stroke | ✅ CLI (via `Canvas`) |
-| `new(color)` | Create an empty stroke | 🚧 Library only |
-| `add_point(point)` | Append a point to the stroke | 🚧 Library only |
-| `hit_test(point, tolerance)` | Check whether a point is within `tolerance` of the stroke | 🚧 Library only |
-
-### `Point`, `BoundingBox`, `Color`
-| Item | Description | Status |
-|------|-------------|--------|
-| `Point::new(x, y, timestamp, pressure)` | Constructor | 🚧 Library only |
-| `Point::distance_squared(other)` | Squared distance between two points | 🚧 Library only |
-| `Point::distance_squared_to_segment(a, b)` | Squared distance from a point to the segment `a`–`b` | 🚧 Library only |
-| `BoundingBox::from_point(x, y)` / `join(other)` | Build and merge bounding boxes | ✅ CLI (internally) |
-| `BoundingBox::intersects(other)` | Check whether two boxes overlap | 🚧 Library only |
-| `Color::new(r, g, b)` | Constructor | 🚧 Library only |
+| `src/error.rs` | `InkError` enum for I/O, JSON, and index errors and `ParseArgError` enum for command parsing errors |
+| `src/parser.rs` | Processes user inputted commands and separate options and positionals |

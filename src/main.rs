@@ -142,13 +142,18 @@ fn main() {
                 }
                 Some("add-point") => {
                     // adds a point to a stroke index. eg usr input 1 30 21 (stroke index 1, (point 30,21))
-                    let (Ok(i), Ok(x), Ok(y)) = (
+                    let (i, x, y) = match (
                         parse_arg::<usize>(positionals.get(2), "index"),
                         parse_arg::<f32>(positionals.get(3), "x"),
                         parse_arg::<f32>(positionals.get(4), "y"),
-                    ) else {
-                        continue;
+                    ) {
+                        (Ok(i), Ok(x), Ok(y)) => (i, x, y),
+                        (Err(e), _, _) | (_, Err(e), _) | (_, _, Err(e)) => {
+                            eprintln!("{e}");
+                            continue;
+                        }
                     };
+
                     match this_canvas.strokes.get_mut(i) {
                         None => println!("Stroke index {i} does not exist"),
                         Some(stroke) => {

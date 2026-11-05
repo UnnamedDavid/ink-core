@@ -30,12 +30,16 @@ fn main() {
         Ok(c) => c,
         Err(err) => {
             eprintln!("Failed to load {path}: {err}");
+            // Allow the program to stay open instead of instantly closes
+            // so that user can see the error message
+            pause();
             return;
         }
     };
 
     println!("Welcome to my ink engine, type help to see commands");
 
+    // Main loop for continous CLI feed
     loop {
         print!("> ");
         let _ = io::stdout().flush();
@@ -215,4 +219,29 @@ fn main() {
             }
         }
     }
+}
+
+// Handle unexpected errors that makes the program cannot continue
+// Evoke cmd "press any button to continue..." message
+#[cfg(windows)]
+fn pause() {
+    let _ = std::process::Command::new("cmd.exe")
+        .arg("/c")
+        .arg("pause")
+        .status();
+}
+
+// Handle unexpected errors that makes the program cannot continue
+// Prints error message
+#[cfg(not(windows))]
+fn pause() {
+    use std::io::{IsTerminal, Read};
+
+    // Determine if it is possible to use terminal
+    if !io::stdin().is_terminal() {
+        return;
+    }
+    eprintln!("Press ENTER to exit...");
+    let mut buf = [0u8; 1];
+    let _ = io::stdin().read(&mut buf);
 }

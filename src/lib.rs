@@ -1,5 +1,6 @@
 pub mod canvas;
 pub mod color;
+pub mod edit;
 pub mod error;
 pub mod geometry;
 pub mod parser;

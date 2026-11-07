@@ -1,3 +1,4 @@
+use ink_core::edit::paint::{Brush, PaintMode};
 use ink_core::{Canvas, Point, parse_arg, parse_command};
 use std::env;
 use std::io::{self, Write};
@@ -20,6 +21,7 @@ fn print_help() {
     println!("  quit                              - exit the program");
 }
 fn main() {
+    let mut is_painting: bool = false;
     // Reads a file path if the user provides one e.g. `cargo run -- custom.json`,
     // otherwise defaults to "canvas.json" in the root directory.
     let path = env::args()
@@ -37,11 +39,23 @@ fn main() {
         }
     };
 
+    let mut paint: PaintMode = PaintMode {
+        brush: Brush::Pen {
+            radius: 1.0,
+            opacity: 1.0,
+        },
+    };
+
     println!("Welcome to my ink engine, type help to see commands");
 
     // Main loop for continous CLI feed
     loop {
-        print!("> ");
+        if is_painting {
+            print!("paint> ");
+        } else {
+            print!("> ");
+        }
+
         let _ = io::stdout().flush();
 
         let mut response = String::new();
@@ -57,7 +71,7 @@ fn main() {
         let parts: Vec<&str> = response.split_whitespace().collect();
         // Separate options and commands
         // Options NOT used yet
-        let (positionals, _options) = match parse_command(&parts) {
+        let (positionals, options) = match parse_command(&parts) {
             Ok((p, o)) => (p, o),
             Err(e) => {
                 eprintln!("Failed to parse you command: {e}");
@@ -70,12 +84,22 @@ fn main() {
             continue;
         };
 
+        if is_painting {
+            paint.execute(&positionals, &options);
+            continue;
+        }
         match command {
             "help" => print_help(),
             "quit" => break,
             "paint" => {
-                // TODO
-                // start paint mode (paint.rs)
+                is_painting = true;
+                // Creates a fresh PaintMode so does not inherit data from last use
+                paint = PaintMode {
+                    brush: Brush::Pen {
+                        radius: 1.0,
+                        opacity: 1.0,
+                    },
+                }
             }
             "canvas" => match positionals.get(1).copied() {
                 Some("info") => {

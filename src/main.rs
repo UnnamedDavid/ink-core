@@ -3,9 +3,6 @@ use ink_core::{Canvas, Point, parse_arg, parse_command};
 use std::env;
 use std::io::{self, Write};
 
-// Default pressure for points added from the CLI
-const DEFAULT_PRESSURE: f32 = 0.5;
-
 fn print_help() {
     println!("Available commands:");
     println!("  canvas info                       - number of strokes and overall bounding box");
@@ -187,7 +184,12 @@ fn main() {
                         Some(stroke) => {
                             // Continue the stroke's timeline from its last point
                             let timestamp = stroke.points.last().map_or(0, |p| p.timestamp + 8);
-                            stroke.add_point(Point::new(x, y, timestamp, DEFAULT_PRESSURE));
+                            stroke.add_point(Point {
+                                x,
+                                y,
+                                timestamp,
+                                ..Default::default()
+                            });
                             println!("Added point ({x}, {y}) to stroke {i}");
                         }
                     }
@@ -211,7 +213,7 @@ fn main() {
                     }
                 };
 
-                if this_canvas.hit_test(Point::new(x, y, 0, 0.0), tolerance) {
+                if this_canvas.hit_test(Point::from_xy(x, y), tolerance) {
                     println!("Hit! ({x}, {y}) touches a stroke (tolerance {tolerance})");
                 } else {
                     println!("Miss. ({x}, {y}) does not touch any stroke (tolerance {tolerance})");

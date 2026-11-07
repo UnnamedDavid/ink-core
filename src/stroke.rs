@@ -115,7 +115,7 @@ mod tests {
     #[test]
     fn test_single_point_stroke() {
         let mut stroke = Stroke::new(dummy_color());
-        stroke.add_point(Point::new(TEST_X, TEST_Y, 0, 0.0));
+        stroke.add_point(Point::from_xy(TEST_X, TEST_Y));
         assert_eq!(stroke.length(), 0.0);
 
         let bbox = stroke.find_bounding_box().unwrap();

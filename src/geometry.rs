@@ -2,10 +2,25 @@ use serde::{Deserialize, Serialize};
 // Information every point in a stroke holds
 #[derive(Debug, Deserialize, Serialize, PartialEq)]
 pub struct Point {
+    // Position of the point
     pub x: f32,
     pub y: f32,
+    // Time created of the point
     pub timestamp: u64,
+    // Pen pressure upon the point is created
+    // Range 0.0 - 1.0
     pub pressure: f32,
+}
+
+impl Default for Point {
+    fn default() -> Self {
+        Self {
+            x: 0.0,
+            y: 0.0,
+            timestamp: 0,
+            pressure: 1.0,
+        }
+    }
 }
 
 impl Point {
@@ -18,7 +33,14 @@ impl Point {
             pressure,
         }
     }
-
+    // Simpler constructor that only requires x and y field
+    pub fn from_xy(x: f32, y: f32) -> Self {
+        Self {
+            x,
+            y,
+            ..Default::default()
+        }
+    }
     // the squared distance between two points (x2 - x1)² + (y2 - y1)²
     pub fn distance_squared(&self, other: &Self) -> f32 {
         let dx = self.x - other.x;
@@ -48,12 +70,7 @@ impl Point {
         // and find the fraction t of the way P is from point A to point B
         let t = ((ap_x * ab_x + ap_y * ab_y) / dist_ab_sq).clamp(0.0, 1.0);
 
-        let closest = Point {
-            x: a.x + t * ab_x,
-            y: a.y + t * ab_y,
-            timestamp: 0,
-            pressure: 0.0,
-        };
+        let closest = Point::from_xy(a.x + t * ab_x, a.y + t * ab_y);
 
         self.distance_squared(&closest)
     }

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 // Information every point in a stroke holds
-#[derive(Debug, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
 pub struct Point {
     // Position of the point
     pub x: f32,
@@ -94,6 +94,17 @@ impl BoundingBox {
             max_y: y,
         }
     }
+
+    // Adds padding to all sides of the bounding box, useful for tolerances
+    pub fn pad(&self, padding: f32) -> Self {
+        Self {
+            min_x: self.min_x - padding,
+            min_y: self.min_y - padding,
+            max_x: self.max_x + padding,
+            max_y: self.max_y + padding,
+        }
+    }
+
     // Find the bounding box of two bounding boxes
     pub fn join(&self, other: &BoundingBox) -> BoundingBox {
         BoundingBox {

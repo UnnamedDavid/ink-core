@@ -9,16 +9,21 @@ pub struct Stroke {
     pub points: Vec<Point>,
 }
 
-// A stroke is a vector of points, meaning a 'stroke' of line
-impl Stroke {
-    // Contructor
-    pub fn new(color: Color) -> Self {
+impl Default for Stroke {
+    fn default() -> Self {
         Self {
-            color,
+            // Black
+            color: Color::new(0.0, 0.0, 0.0),
             points: Vec::new(),
         }
     }
-
+}
+// A stroke is a vector of points, meaning a 'stroke' of line
+impl Stroke {
+    // Contructor
+    pub fn new(points: Vec<Point>, color: Color) -> Self {
+        Self { color, points }
+    }
     // Finds the bounding box of the stroke of line, that is, the smallest box
     // that encloses the stroke.
     pub fn find_bounding_box(&self) -> Option<BoundingBox> {
@@ -54,12 +59,7 @@ impl Stroke {
         let Some(stroke_bbox) = self.find_bounding_box() else {
             return false;
         };
-        let query_bbox = BoundingBox {
-            min_x: point.x - tolerance,
-            max_x: point.x + tolerance,
-            min_y: point.y - tolerance,
-            max_y: point.y + tolerance,
-        };
+        let query_bbox = BoundingBox::from_point(point.x, point.y).pad(tolerance);
 
         if !query_bbox.intersects(&stroke_bbox) {
             return false;
@@ -107,14 +107,14 @@ mod tests {
     }
     #[test]
     fn test_empty_stroke() {
-        let stroke = Stroke::new(dummy_color());
+        let stroke = Stroke::new(Vec::new(), dummy_color());
         assert_eq!(stroke.find_bounding_box(), None);
         assert_eq!(stroke.length(), 0.0);
     }
 
     #[test]
     fn test_single_point_stroke() {
-        let mut stroke = Stroke::new(dummy_color());
+        let mut stroke = Stroke::new(Vec::new(), dummy_color());
         stroke.add_point(Point::from_xy(TEST_X, TEST_Y));
         assert_eq!(stroke.length(), 0.0);
 

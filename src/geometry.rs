@@ -60,8 +60,8 @@ impl Point {
             return self.distance_squared(a);
         }
 
-        let ap_x = a.x - self.x;
-        let ap_y = a.y - self.y;
+        let ap_x = self.x - a.x;
+        let ap_y = self.y - a.y;
 
         // Concepts: Parametric lines & dot product
         // ap_x * ab_x + ap_y * ab_y = cos θ * |ap| * |ab|

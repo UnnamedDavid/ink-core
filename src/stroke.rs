@@ -76,6 +76,77 @@ impl Stroke {
         }
     }
 
+    pub fn stroke_hit_test(&self, other: &Self, tolerance: f32) -> bool {
+        const CHUNK_SIZE: usize = 16;
+        // Check if each stroke is empty
+        let Some(self_bbox) = self.find_bounding_box() else {
+            return false;
+        };
+        let Some(other_bbox) = other.find_bounding_box() else {
+            return false;
+        };
+
+        // Check if each other's bounding box intersects with tolerance
+        if !other_bbox.pad(tolerance).intersects(&self_bbox) {
+            return false;
+        };
+
+        // Split each stroke into chunk of stroke each with maximum of 50 points
+        let mut self_chunks: Vec<Stroke> = Vec::new();
+        let mut other_chunks: Vec<Stroke> = Vec::new();
+
+        for start_point in (0..self.points.len()).step_by(CHUNK_SIZE) {
+            let end_point = (start_point + CHUNK_SIZE).min(self.points.len() - 1);
+            self_chunks.push(Stroke {
+                points: self.points[start_point..=end_point].to_vec(),
+                ..Default::default()
+            });
+        }
+
+        for start_point in (0..other.points.len()).step_by(CHUNK_SIZE) {
+            let end_point = (start_point + CHUNK_SIZE).min(other.points.len() - 1);
+            other_chunks.push(Stroke {
+                points: other.points[start_point..=end_point].to_vec(),
+                ..Default::default()
+            });
+        }
+
+        for self_chunk in &self_chunks {
+            let Some(self_chunk_bbox) = self_chunk.find_bounding_box() else {
+                continue;
+            };
+
+            // Check if each chunk of the stroke's bbox has intersect with other's
+            // bbox with tolerance
+            if !self_chunk_bbox.intersects(&other_bbox.pad(tolerance)) {
+                continue;
+            }
+
+            for other_chunk in &other_chunks {
+                let Some(other_chunk_bbox) = other_chunk.find_bounding_box() else {
+                    continue;
+                };
+
+                if !self_chunk_bbox.pad(tolerance).intersects(&other_chunk_bbox) {
+                    continue;
+                }
+
+                if self_chunk
+                    .points
+                    .iter()
+                    .any(|p| other_chunk.hit_test(p, tolerance))
+                    || other_chunk
+                        .points
+                        .iter()
+                        .any(|p| self_chunk.hit_test(p, tolerance))
+                {
+                    return true;
+                }
+            }
+        }
+        false
+    }
+
     pub fn to_svg_polyline(&self, width: f32) -> Polyline {
         let points_str = self
             .points

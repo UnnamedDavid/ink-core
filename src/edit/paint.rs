@@ -61,7 +61,7 @@ impl PaintMode {
     // Create a stroke from inputted points
     // Self contained input methods
     pub fn draw_stroke() -> Stroke {
-        let mut usr_stroke: Stroke = Stroke::new(Color::new(1.0, 0.0, 0.0));
+        let mut usr_stroke: Stroke = Stroke::new(Vec::new(), Color::new(1.0, 0.0, 0.0));
         println!("Start editing stroke, to add a point use <x> <y>, ENTER to finish");
         loop {
             print!("point {}> ", usr_stroke.points.len() + 1);
